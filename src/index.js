@@ -10,10 +10,13 @@ function getStudents() {
 
 // Відобразити студентів у таблиці
 function renderStudents(students) {
-  document.querySelector("#students-table tbody").innerHTML = students
-    .map(
-      (s) => `
-    <tr>
+  const tbody = document.querySelector("#students-table tbody");
+  tbody.innerHTML = "";
+
+  students.forEach((s) => {
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
       <td>${s.id}</td>
       <td>${s.name}</td>
       <td>${s.age}</td>
@@ -22,13 +25,21 @@ function renderStudents(students) {
       <td>${s.email}</td>
       <td>${s.isEnrolled ? "Так" : "Ні"}</td>
       <td>
-        <button onclick="updateStudent(${s.id})">Оновити</button>
-        <button onclick="deleteStudent(${s.id})">Видалити</button>
+        <button class="update-btn">Оновити</button>
+        <button class="delete-btn">Видалити</button>
       </td>
-    </tr>
-  `
-    )
-    .join("");
+    `;
+
+    tr.querySelector(".update-btn").addEventListener("click", () =>
+      updateStudent(s.id)
+    );
+
+    tr.querySelector(".delete-btn").addEventListener("click", () =>
+      deleteStudent(s.id)
+    );
+
+    tbody.appendChild(tr);
+  });
 }
 
 // Додати нового студента
@@ -68,7 +79,10 @@ function updateStudent(id) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name: newName }),
   })
-    .then((res) => res.json())
+    .then((res) => {
+      if (!res.ok) throw new Error("Помилка оновлення");
+      return res.json();
+    })
     .then(() => getStudents())
     .catch((err) => console.error("Помилка оновлення:", err));
 }
@@ -80,6 +94,10 @@ function deleteStudent(id) {
   fetch(`${apiUrl}/${id}`, {
     method: "DELETE",
   })
+    .then((res) => {
+      if (!res.ok) throw new Error("Помилка видалення");
+      return res.json();
+    })
     .then(() => getStudents())
     .catch((err) => console.error("Помилка видалення:", err));
 }
