@@ -38,7 +38,7 @@ function addStudent(e) {
   const form = document.querySelector("#add-student-form");
   const student = {
     name: form.name.value,
-    age: +form.age.value,
+    age: form.age.value,
     course: form.course.value,
     skills: form.skills.value.split(",").map((s) => s.trim()),
     email: form.email.value,
