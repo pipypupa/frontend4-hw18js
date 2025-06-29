@@ -1,12 +1,17 @@
 const apiUrl = "http://localhost:3000/students";
 
+
 // Отримати студентів
-function getStudents() {
-  fetch(apiUrl)
-    .then((res) => res.json())
-    .then((data) => renderStudents(data))
-    .catch((err) => console.error("Помилка завантаження студентів:", err));
+async function getStudents() {
+  try {
+    const res = await fetch(apiUrl);
+    const data = await res.json();
+    renderStudents(data);
+  } catch (err) {
+    console.error("Помилка завантаження студентів:", err);
+  }
 }
+
 
 // Відобразити студентів у таблиці
 function renderStudents(students) {
@@ -42,8 +47,9 @@ function renderStudents(students) {
   });
 }
 
+
 // Додати нового студента
-function addStudent(e) {
+async function addStudent(e) {
   e.preventDefault();
 
   const form = document.querySelector("#add-student-form");
@@ -56,51 +62,61 @@ function addStudent(e) {
     isEnrolled: form.isEnrolled.checked,
   };
 
-  fetch(apiUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(student),
-  })
-    .then((res) => res.json())
-    .then(() => {
-      getStudents();
-      form.reset();
-    })
-    .catch((err) => console.error("Помилка додавання:", err));
+  try {
+    const res = await fetch(apiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(student),
+    });
+    await res.json();
+    await getStudents();
+    form.reset();
+  } catch (err) {
+    console.error("Помилка додавання:", err);
+  }
 }
 
+
 // Оновити студента
-function updateStudent(id) {
+async function updateStudent(id) {
   const newName = prompt("Введіть нове ім’я студента:");
   if (!newName) return;
 
-  fetch(`${apiUrl}/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name: newName }),
-  })
-    .then((res) => {
-      if (!res.ok) throw new Error("Помилка оновлення");
-      return res.json();
-    })
-    .then(() => getStudents())
-    .catch((err) => console.error("Помилка оновлення:", err));
+  try {
+    const res = await fetch(`${apiUrl}/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: newName }),
+    });
+
+    if (!res.ok) throw new Error("Помилка оновлення");
+
+    await res.json();
+    await getStudents();
+  } catch (err) {
+    console.error("Помилка оновлення:", err);
+  }
 }
+
 
 // Видалити студента
-function deleteStudent(id) {
+async function deleteStudent(id) {
   if (!confirm("Ви впевнені, що хочете видалити цього студента?")) return;
 
-  fetch(`${apiUrl}/${id}`, {
-    method: "DELETE",
-  })
-    .then((res) => {
-      if (!res.ok) throw new Error("Помилка видалення");
-      return res.json();
-    })
-    .then(() => getStudents())
-    .catch((err) => console.error("Помилка видалення:", err));
+  try {
+    const res = await fetch(`${apiUrl}/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!res.ok) throw new Error("Помилка видалення");
+
+    await res.json();
+    await getStudents();
+  } catch (err) {
+    console.error("Помилка видалення:", err);
+  }
 }
+
 
 // Обробка подій
 document
