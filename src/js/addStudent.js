@@ -5,6 +5,7 @@ export async function addStudent(e) {
   e.preventDefault();
 
   const form = document.querySelector("#add-student-form");
+
   const student = {
     name: form.name.value,
     age: form.age.value,
@@ -21,10 +22,12 @@ export async function addStudent(e) {
       body: JSON.stringify(student),
     });
 
+    if (!res.ok) throw new Error("Помилка при додаванні студента");
+
     await res.json();
     await getStudents();
     form.reset();
-  } catch (err) {
-    console.error("Помилка додавання:", err);
+  } catch (error) {
+    console.error("Помилка додавання студента:", error);
   }
 }

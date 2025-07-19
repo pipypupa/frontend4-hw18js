@@ -3,10 +3,10 @@ import { renderStudents } from "./renderStudents.js";
 
 export async function getStudents() {
   try {
-    const res = await fetch(apiUrl);
-    const data = await res.json();
+    const response = await fetch(apiUrl);
+    const data = await response.json();
     renderStudents(data);
-  } catch (err) {
-    console.error("Помилка завантаження студентів:", err);
+  } catch (error) {
+    console.error("Помилка завантаження студентів:", error);
   }
 }
